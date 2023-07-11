@@ -3,6 +3,7 @@
 #You code should contain 3 classes: Class BankAccount,Class SavingsAccount
 #Class CurrentAccount. Let SavingsAccount and CurrentAccount inherit BankAccount
 import mysql.connector
+from db_info import db_list
 
 class Bank_account:
     def __init__ (this, name, Phone_no, Address, Occupation, gender, dob, email):
@@ -66,10 +67,10 @@ def my_main():
     new_client = Savings_account(name, phone_no, address, occupation, gender, dob, email, city)
 
     mydb = mysql.connector.connect(
-        host="127.0.0.1",
-        user="ugochi",
-        password="November@10415",
-        database= "new_work"
+        host ="127.0.0.1",
+        user = db_list[0],
+        password = db_list[1],
+        database = db_list[2]
     )   
     new_db = mydb.cursor()
     new_db.execute("CREATE TABLE Bank_Account (id INT(11) NOT NULL AUTO_INCREMENT, Name VARCHAR(50) NOT NULL, Age VARCHAR(50) NOT NULL, Phone_No VARCHAR(50) NOT NULL, Gender VARCHAR(50) NOT NULL, Address VARCHAR(50) NOT NULL, City VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, balance FLOAT(12, 3), PRIMARY KEY (id))")
