@@ -21,9 +21,9 @@ class Savings_account(Bank_account):
         this.City = City
 
     def deposit(this, amount):
-        if(isinstance(this.balance, float) == True or isinstance(this.balance, int) == True):
+        if(isinstance(amount, float) == True or isinstance(amount, int) == True):
             this.balance += amount
-            return f"{this.balance} deposited by {this.name}"
+            return this.balance
         else:
             return "Only numbers please"
 
@@ -64,8 +64,6 @@ def my_main():
     email = str(input("Email: "))
     city = str(input("City: "))
     new_client = Savings_account(name, phone_no, address, occupation, gender, dob, email, city)
-    my_deposit = new_client.deposit(5000)
-    print(my_deposit)
 
     mydb = mysql.connector.connect(
         host="127.0.0.1",
@@ -74,19 +72,27 @@ def my_main():
         database= "new_work"
     )   
     new_db = mydb.cursor()
-
-    '''sql = "INSERT INTO Bank_Account(name,age,gender,address,city, eMAIL) VALUES (%s,%s,%s,%s,%s,%s)"
-    Ray = (name, dob, gender, address, city, email)
+    new_db.execute("CREATE TABLE Bank_Account (id INT(11) NOT NULL AUTO_INCREMENT, Name VARCHAR(50) NOT NULL, Age VARCHAR(50) NOT NULL, Phone_No VARCHAR(50) NOT NULL, Gender VARCHAR(50) NOT NULL, Address VARCHAR(50) NOT NULL, City VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, balance FLOAT(12, 3), PRIMARY KEY (id))")
+  
+    sql = "INSERT INTO Bank_Account(Name, Age, Phone_No, Gender, Address, City, email, balance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s4)"
+    Ray = (name, dob, phone_no, gender, address, city, email, 0)
     new_db.execute(sql, Ray)
     
     mydb.commit()
     print(new_db.rowcount, "records inserted.")
 
+    sql = "SELECT id, email FROM Bank_Account"
+    new_db.execute(sql)
+    my_query = new_db.fetchone()
+    print(my_query)
+    depositamount = str(input("Enter the deposit amount: "))
+    my_deposit = new_client.deposit(float(depositamount))
+    print(my_deposit)
+    sql = "UPDATE Bank_Account SET balance = %s WHERE email = %s"
+    val = (my_deposit, email)
+    new_db.execute(sql, val)
+    mydb.commit()
+    print(new_db.rowcount, "records affected.")
+
 if __name__ == "__main__": #namespaces and scopes - global and local(function) scopes
-    my_main()'''
-
-
-
-
-#new_db.execute("CREATE TABLE Bank_Account (id INT(11) NOT NULL AUTO_INCREMENT, Name VARCHAR(50) NOT NULL,Age VARCHAR(50) NOT NULL,PHONE_NO VARCHAR(50) NOT NULL,AMOUNT VARCHAR(50) NOT NULL,Gender VARCHAR(50) NOT NULL,Address VARCHAR(50) NOT NULL,City VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, PRIMARY KEY (id))")
-    
+    my_main()  
