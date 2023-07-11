@@ -66,11 +66,12 @@ def my_main():
     city = str(input("City: "))
     new_client = Savings_account(name, phone_no, address, occupation, gender, dob, email, city)
 
+    db_params = db_list()
     mydb = mysql.connector.connect(
         host ="127.0.0.1",
-        user = db_list[0],
-        password = db_list[1],
-        database = db_list[2]
+        user = db_params[0],
+        password = db_params[1],
+        database = db_params[2]
     )   
     new_db = mydb.cursor()
     new_db.execute("CREATE TABLE Bank_Account (id INT(11) NOT NULL AUTO_INCREMENT, Name VARCHAR(50) NOT NULL, Age VARCHAR(50) NOT NULL, Phone_No VARCHAR(50) NOT NULL, Gender VARCHAR(50) NOT NULL, Address VARCHAR(50) NOT NULL, City VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, balance FLOAT(12, 3), PRIMARY KEY (id))")
