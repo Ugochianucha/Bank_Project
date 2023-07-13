@@ -21,8 +21,10 @@ class Savings_account(Bank_account):
         super().__init__(name, Phone_no, Address, Occupation, gender, dob, email)
         this.City = City
 
-    def deposit(this, amount):
+    def deposit(this, balance, amount):
+        amount = float(amount)
         if(isinstance(amount, float) == True or isinstance(amount, int) == True):
+            this.balance = balance
             this.balance += amount
             return this.balance
         else:
@@ -34,8 +36,14 @@ class Savings_account(Bank_account):
         else:
             pass
 
-    def withdrawal(this):
-        pass
+    def withdrawal(this, balance, amount):
+        amount = float(amount)
+        if(isinstance(amount, float) == True or isinstance(amount, int) == True):
+            this.balance = balance
+            this.balance -= amount
+            return this.balance
+        else:
+            return "Only numbers please"
 '''
 class Current_account:
     def __init__(this, name, Phone_no, Address, Occupation, City, Opening_balance):
@@ -55,7 +63,27 @@ class Current_account:
         pass
 '''
 
+def check_db(model):
+    email = str(input("Email: "))
+    sql = "SELECT * FROM Bank_Account where email = %s"
+    val = ([email])
+    model.execute(sql, val)
+    new_query = model.fetchone()
+
+    return new_query
+
 def my_main():
+    db_params = db_list()
+    mydb = mysql.connector.connect(
+        host ="127.0.0.1",
+        user = db_params[0],
+        password = db_params[1],
+        database = db_params[2]
+    )   
+    new_db = mydb.cursor()
+   # new_db.execute("CREATE TABLE Bank_Account (id INT(11) NOT NULL AUTO_INCREMENT, Name VARCHAR(50) NOT NULL, Age VARCHAR(50) NOT NULL, Phone_No VARCHAR(50) NOT NULL, Gender VARCHAR(50) NOT NULL, Address VARCHAR(50) NOT NULL, City VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, balance FLOAT(12, 3), PRIMARY KEY (id))")
+  
+    '''
     name = str(input("Please type in your name: "))
     phone_no = str(input("Mobile number please: "))
     address = str(input("House address?: "))
@@ -65,33 +93,39 @@ def my_main():
     email = str(input("Email: "))
     city = str(input("City: "))
     new_client = Savings_account(name, phone_no, address, occupation, gender, dob, email, city)
-
-    db_params = db_list()
-    mydb = mysql.connector.connect(
-        host ="127.0.0.1",
-        user = db_params[0],
-        password = db_params[1],
-        database = db_params[2]
-    )   
-    new_db = mydb.cursor()
-    new_db.execute("CREATE TABLE Bank_Account (id INT(11) NOT NULL AUTO_INCREMENT, Name VARCHAR(50) NOT NULL, Age VARCHAR(50) NOT NULL, Phone_No VARCHAR(50) NOT NULL, Gender VARCHAR(50) NOT NULL, Address VARCHAR(50) NOT NULL, City VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, balance FLOAT(12, 3), PRIMARY KEY (id))")
-  
     sql = "INSERT INTO Bank_Account(Name, Age, Phone_No, Gender, Address, City, email, balance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s4)"
     Ray = (name, dob, phone_no, gender, address, city, email, 0)
     new_db.execute(sql, Ray)
     
     mydb.commit()
     print(new_db.rowcount, "records inserted.")
+    '''
 
-    sql = "SELECT id, email FROM Bank_Account"
-    new_db.execute(sql)
-    my_query = new_db.fetchone()
-    print(my_query)
-    depositamount = str(input("Enter the deposit amount: "))
-    my_deposit = new_client.deposit(float(depositamount))
+    my_query = check_db(new_db)
+    bal = my_query[-1]
+    email = my_query[7]
+    print(f"This client's record is - {my_query}\nThe balance is {bal}")
+
+    my_client = Savings_account(my_query[1], my_query[3], my_query[5], "Doctor", my_query[4], my_query[2], my_query[7], my_query[6])
+    depositamount = input("Enter the deposit amount: ")
+    my_deposit = my_client.deposit(bal, depositamount)
     print(my_deposit)
     sql = "UPDATE Bank_Account SET balance = %s WHERE email = %s"
     val = (my_deposit, email)
+    new_db.execute(sql, val)
+    mydb.commit()
+    print(new_db.rowcount, "records affected.")
+
+    my_query = check_db(new_db)
+    bal = my_query[-1]
+    email = my_query[7]
+    print(f"This client's record is - {my_query}\nThe balance is {bal}")
+
+    withdrawamount = input("Enter the withdrawal amount: ")
+    my_withdrawal = my_client.withdrawal(bal, withdrawamount)
+    print(my_withdrawal)
+    sql = "UPDATE Bank_Account SET balance = %s WHERE email = %s"
+    val = (my_withdrawal, email)
     new_db.execute(sql, val)
     mydb.commit()
     print(new_db.rowcount, "records affected.")
