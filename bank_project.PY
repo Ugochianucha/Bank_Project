@@ -55,7 +55,7 @@ def check_db(model):
 
     return new_query
 
-def my_main():
+def bank_cli():
     db_params = db_list()
     mydb = mysql.connector.connect(
         host ="127.0.0.1",
@@ -114,7 +114,16 @@ def my_main():
     print(new_db.rowcount, "records affected.")
 
     change_pin = input("Enter the user_pin:")
-    
+
+def my_main():
+    user_in = input("Welcome to Ugo Bank. Press 'Y' to proceed and any key to stop. ")
+    while user_in == 'Y' or user_in == 'y':
+        bank_cli()
+        user_in = input("Do you want to perform another transaction?\nY - Yes\nN - No\n")
+        if user_in == 'Y' or user_in == 'y':
+            bank_cli()
+        else:
+            break
     
 
 if __name__ == "__main__": #namespaces and scopes - global and local(function) scopes
